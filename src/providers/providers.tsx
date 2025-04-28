@@ -1,8 +1,6 @@
 "use client";
 
-import { getProfile } from "@services/methods/user/user";
 import { useUserStore } from "@store/user-store";
-import { SessionProvider } from "next-auth/react";
 import React from "react";
 
 export function UserProvider() {

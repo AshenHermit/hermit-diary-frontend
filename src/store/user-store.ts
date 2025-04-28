@@ -1,5 +1,5 @@
 import { getFallbackPicture } from "@/lib/user-utils";
-import { getProfile } from "@/services/methods/user/user";
+import { getProfile } from "@/services/methods/user/profile";
 import { create } from "zustand";
 
 export type LocalUser = {
@@ -8,6 +8,7 @@ export type LocalUser = {
   name: string;
   email: string;
   picture: string;
+  birthday: string | null;
 };
 
 export type UserState = LocalUser & {
@@ -19,6 +20,7 @@ export type UserState = LocalUser & {
 const userDefaults: LocalUser = {
   id: -1,
   name: "",
+  birthday: null,
   authorized: false,
   email: "",
   picture: "",

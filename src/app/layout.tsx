@@ -10,6 +10,7 @@ import { SessionProvider } from "next-auth/react";
 import { Providers } from "../providers/providers";
 import { ErrorNotifier } from "@/components/layout/error-notifier";
 import { Toaster } from "@/components/ui/toaster";
+import { CookiesProvider } from "next-client-cookies/server";
 
 const font = Roboto_Slab({ subsets: ["latin", "cyrillic"] });
 
@@ -33,15 +34,17 @@ export default function RootLayout({
       >
         <Toaster />
         <ErrorNotifier />
-        <Suspense>
-          <Providers>
-            <div className="grid min-h-[100vh] grid-rows-[auto_1fr_auto]">
-              <Header />
-              <div className="">{children}</div>
-              <Footer />
-            </div>
-          </Providers>
-        </Suspense>
+        <CookiesProvider>
+          <Suspense>
+            <Providers>
+              <div className="grid min-h-[100vh] grid-rows-[auto_1fr_auto]">
+                <Header />
+                <div className="">{children}</div>
+                <Footer />
+              </div>
+            </Providers>
+          </Suspense>
+        </CookiesProvider>
       </body>
     </html>
   );

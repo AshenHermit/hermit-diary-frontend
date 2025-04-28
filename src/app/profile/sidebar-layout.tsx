@@ -87,11 +87,11 @@ export function SidebarProfileLayout({ children }: React.PropsWithChildren) {
           </SidebarGroup>
         </SidebarContent>
       </Sidebar>
-      <SidebarInset className="bg-transparent backdrop-blur-lg backdrop-brightness-110">
+      <SidebarInset className="bg-transparent glass grid grid-rows-[auto_1fr]">
         <div>
           <SidebarTrigger className="p-6" />
         </div>
-        <main className="p-8">{children}</main>
+        <main className=" min-h-full">{children}</main>
       </SidebarInset>
     </SidebarProvider>
   );

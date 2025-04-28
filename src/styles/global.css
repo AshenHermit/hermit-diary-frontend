@@ -9,7 +9,7 @@
     padding: 0rem 3rem;
   }
   .glass {
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(16px) brightness(70%);
   }
 }
 

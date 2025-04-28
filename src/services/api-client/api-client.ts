@@ -30,12 +30,18 @@ export class ApiClient {
   async get<T, R>(endpoint: string, data?: R) {
     return this.processResponse<T>(this.axios.get(endpoint, { params: data }));
   }
-  async patch<T, R>(endpoint: string, data?: R) {
-    return this.processResponse<T>(this.axios.patch(endpoint, data));
-  }
   async post<T, R>(endpoint: string, data?: R) {
     return this.processResponse<T>(this.axios.post(endpoint, data));
   }
+  async patch<T, R>(endpoint: string, data?: R) {
+    return this.processResponse<T>(this.axios.patch(endpoint, data));
+  }
+  async delete<T, R>(endpoint: string, data?: R) {
+    return this.processResponse<T>(
+      this.axios.delete(endpoint, { params: data })
+    );
+  }
+
   async postFile<T>(endpoint: string, file: File) {
     const formData = new FormData();
     formData.append("file", file);
