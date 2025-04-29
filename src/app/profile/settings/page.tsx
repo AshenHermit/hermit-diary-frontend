@@ -231,9 +231,11 @@ function SocialLinksEditor() {
           socialLink={link}
         />
       ))}
-      <Button onClick={addLink}>
-        <PlusIcon /> Add
-      </Button>
+      <div className="flex justify-center">
+        <Button onClick={addLink}>
+          <PlusIcon /> Add
+        </Button>
+      </div>
     </div>
   );
 }

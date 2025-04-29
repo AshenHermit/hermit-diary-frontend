@@ -18,16 +18,23 @@ import {
 import { useLogout } from "@/hooks/user-hooks";
 import { useLocalUserPicture, useUserStore } from "@/store/user-store";
 
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
+import {
+  Calendar,
+  CircleDotDashed,
+  Home,
+  Inbox,
+  Search,
+  Settings,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 // Menu items.
 export const profileLinks = [
   {
-    title: "Home",
-    url: "/profile/home",
-    icon: Home,
+    title: "Diaries",
+    url: "/profile/diaries",
+    icon: CircleDotDashed,
   },
   {
     title: "Settings",
