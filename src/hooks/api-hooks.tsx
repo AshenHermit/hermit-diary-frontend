@@ -7,12 +7,15 @@ import React from "react";
 
 export function useUserDiaries(userId: number | undefined) {
   const [diaries, setDiaries] = React.useState<Diary[]>([]);
+  const [isLoaded, setIsLoaded] = React.useState<boolean>(false);
   const { toast } = useToast();
 
   const loadDiaries = React.useCallback(async () => {
     if (userId !== undefined) {
+      setIsLoaded(false);
       const diaries = await getUserDiaries(userId);
       setDiaries(diaries);
+      setIsLoaded(true);
     }
   }, [userId]);
 
@@ -28,5 +31,5 @@ export function useUserDiaries(userId: number | undefined) {
     loadDiaries();
   }, [loadDiaries]);
 
-  return { diaries, loadDiaries, addDiary };
+  return { diaries, loadDiaries, addDiary, isLoaded };
 }

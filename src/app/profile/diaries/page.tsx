@@ -1,10 +1,12 @@
 "use client";
 
 import { HorizontalDivider } from "@/components/ui/horizontal-divider";
+import { LoadingSpinner } from "@/components/ui/spinner";
 import { useUserDiaries } from "@/hooks/api-hooks";
 import { Diary } from "@/services/types/diary";
 import { useUserStore } from "@/store/user-store";
 import { CircleDotDashed, CircleFadingPlus } from "lucide-react";
+import Link from "next/link";
 import React from "react";
 
 export default function Page() {
@@ -19,9 +21,16 @@ export default function Page() {
 function DiariesList() {
   const userLoaded = useUserStore((state) => state.loaded);
   const userId = useUserStore((state) => state.id);
-  const { diaries, loadDiaries, addDiary } = useUserDiaries(
+  const { diaries, loadDiaries, addDiary, isLoaded } = useUserDiaries(
     userLoaded ? userId : undefined
   );
+
+  if (!isLoaded)
+    return (
+      <div className="flex w-full min-h-[200px] items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
 
   return (
     <div className="grid grid-cols-4 gap-4">
@@ -41,12 +50,14 @@ function DiaryCard({
   onUpdate?: () => void;
 }) {
   return (
-    <div className="h-[200px] bg-muted grid grid-rows-[1fr_auto] rounded-2xl overflow-hidden transition-all hover:scale-105">
-      <div className="flex justify-center items-center bg-sidebar cursor-pointer">
-        <CircleDotDashed />
+    <Link href={`/diary/${diary.id}`}>
+      <div className="h-[200px] bg-muted grid grid-rows-[1fr_auto] rounded-2xl overflow-hidden transition-all hover:scale-105">
+        <div className="flex justify-center items-center bg-sidebar cursor-pointer">
+          <CircleDotDashed />
+        </div>
+        <div className="border-t-2 border-gray-950 p-4">{diary.name}</div>
       </div>
-      <div className="border-t-2 border-gray-950 p-4">{diary.name}</div>
-    </div>
+    </Link>
   );
 }
 
