@@ -4,7 +4,9 @@ import {
   getDiary,
   getDiaryWritePermission,
 } from "@/services/methods/user/diaries";
+import { getDiaryNotes } from "@/services/methods/user/notes";
 import { Diary } from "@/services/types/diary";
+import { DiaryNote } from "@/services/types/notes";
 import React from "react";
 import { createStore, StoreApi, useStore } from "zustand";
 
@@ -12,6 +14,8 @@ export type DiaryProps = Diary & {
   writePermission: boolean;
   loaded: boolean;
   loadDiary: (diaryCode: string) => Promise<void>;
+  loadNotes: () => Promise<void>;
+  notes: DiaryNote[];
 };
 
 export const defaultDiary: Diary = {
@@ -27,14 +31,22 @@ const createDiaryStore = () => {
     ...{
       writePermission: false,
       loaded: false,
+      notes: [],
       async loadDiary(diaryCode) {
         try {
           const diary = await getDiary(diaryCode);
           const writePermission = await getDiaryWritePermission(diaryCode);
-          set({ ...diary, writePermission, loaded: true });
+          const notes = await getDiaryNotes(diary.id);
+          set({ ...diary, notes, writePermission, loaded: true });
         } catch (e) {
           set({ loaded: true });
         }
+      },
+      async loadNotes() {
+        try {
+          const notes = await getDiaryNotes(get().id);
+          set({ notes });
+        } catch (e) {}
       },
     },
   }));

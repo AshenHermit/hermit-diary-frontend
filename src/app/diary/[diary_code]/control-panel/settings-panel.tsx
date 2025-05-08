@@ -1,6 +1,11 @@
 "use client";
 
+import { DiaryTabPanel } from "@/app/diary/[diary_code]/control-panel/panel";
 import { useDiaryStore } from "@/app/diary/[diary_code]/diary-store";
+import {
+  ConfirmDialog,
+  ConfirmDialogApi,
+} from "@/components/controls/confirmation-dialog";
 import {
   Accordion,
   AccordionContent,
@@ -33,6 +38,7 @@ import { deleteDiary, updateDiary } from "@/services/methods/user/diaries";
 import { Diary } from "@/services/types/diary";
 import { zodResolver } from "@hookform/resolvers/zod";
 import debounce from "just-debounce-it";
+import { CircleDashedIcon, TriangleAlertIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { useForm } from "react-hook-form";
@@ -41,26 +47,27 @@ import { z } from "zod";
 const sections = [
   {
     key: "general",
-    title: "Основные",
+    title: (
+      <>
+        <CircleDashedIcon /> Основные
+      </>
+    ),
     content: <GeneralSettings />,
   },
   {
     key: "danger",
-    title: "Опасная зона",
+    title: (
+      <>
+        <TriangleAlertIcon /> Опасная зона
+      </>
+    ),
     content: <DangerZoneSection />,
   },
 ];
 
-export function SettingsPanel({}) {
-  const diaryLoaded = useDiaryStore((state) => state.loaded);
-  if (!diaryLoaded)
-    return (
-      <div className="flex justify-center p-8">
-        <LoadingSpinner />
-      </div>
-    );
+export function SettingsPanel() {
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <DiaryTabPanel>
       <div className="text-lg font-semibold">Настройки дневника</div>
       <Accordion type="multiple" defaultValue={sections.map((x) => x.key)}>
         {sections.map((x) => (
@@ -70,7 +77,7 @@ export function SettingsPanel({}) {
           </AccordionItem>
         ))}
       </Accordion>
-    </div>
+    </DiaryTabPanel>
   );
 }
 
@@ -159,33 +166,34 @@ function DangerZoneSection() {
 
   const router = useRouter();
 
+  const deletionDialogApi = React.useRef<ConfirmDialogApi>(null);
   const { loading, error, handleRequest } = useRequestHandler();
 
-  const onOk = React.useCallback(() => {
+  const onDelitionConfirm = React.useCallback(async () => {
     handleRequest(async () => {
       await deleteDiary(diaryData);
       setIsOpen(false);
       router.push("/profile/diaries");
     });
-  }, [router]);
+  }, [router, diaryData]);
 
   return (
     <>
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogTrigger asChild>
-          <Button variant={"destructive"}>Delete Diary</Button>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>Уверены?</DialogHeader>
-          <div className="">Дневник безвозвратно исчезнет</div>
-          <DialogFooter>
-            <Button onClick={onOk}>Да</Button>
-            <Button variant={"destructive"} onClick={() => setIsOpen(false)}>
-              Отмена
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        apiRef={deletionDialogApi}
+        onConfirm={onDelitionConfirm}
+        title={"Удаление дневника"}
+        description={"Безвозвратно"}
+        okContent={"Удалить"}
+        cancelContent={"Отмена"}
+        danger
+      />
+      <Button
+        variant={"destructive"}
+        onClick={() => deletionDialogApi.current?.open()}
+      >
+        Delete Diary
+      </Button>
     </>
   );
 }

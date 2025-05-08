@@ -7,7 +7,7 @@ export async function getUserDiaries(userId: number) {
 }
 
 export async function getDiary(diaryCode: string) {
-  return await apiClient.get<{}, {}>(`diaries/${Number(diaryCode)}`);
+  return await apiClient.get<Diary, {}>(`diaries/${Number(diaryCode)}`);
 }
 
 export async function getDiaryWritePermission(diaryCode: string) {

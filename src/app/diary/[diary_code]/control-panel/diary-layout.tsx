@@ -1,5 +1,6 @@
 "use client";
 
+import { NotesManager } from "@/app/diary/[diary_code]/control-panel/notes-manager";
 import { SettingsPanel } from "@/app/diary/[diary_code]/control-panel/settings-panel";
 import { useDiaryStore } from "@/app/diary/[diary_code]/diary-store";
 import { Button } from "@/components/ui/button";
@@ -17,18 +18,18 @@ import React, { Suspense } from "react";
 
 const tabsRaw = [
   {
-    key: "posts",
-    name: "posts",
+    key: "post",
+    name: "post",
     icon: CircleDotDashedIcon,
     writePermission: false,
     content: <></>,
   },
   {
-    key: "files",
-    name: "files",
+    key: "notes",
+    name: "notes",
     icon: FolderTreeIcon,
     writePermission: false,
-    content: <></>,
+    content: <NotesManager />,
   },
   {
     key: "settings",
@@ -58,10 +59,14 @@ export function DiaryLayout({ children }: React.PropsWithChildren) {
   const loadDiary = useDiaryStore((state) => state.loadDiary);
   const writePermission = useDiaryStore((state) => state.writePermission);
 
-  const [currentTab, setCurrentTab] = React.useState<TabKey>("posts");
+  const [currentTab, setCurrentTab] = React.useState<TabKey>("post");
   let selectedTabData: TabData | null = null;
   const availableTabs = tabs.filter((tab) => tab.key == currentTab);
   if (availableTabs.length > 0) selectedTabData = availableTabs[0];
+
+  React.useEffect(() => {
+    setIsOpen(true);
+  }, [currentTab]);
 
   React.useEffect(() => {
     loadDiary(params.diary_code);
