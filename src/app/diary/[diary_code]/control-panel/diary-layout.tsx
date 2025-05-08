@@ -1,6 +1,7 @@
 "use client";
 
 import { NotesManager } from "@/app/diary/[diary_code]/control-panel/notes-manager";
+import { SelectedNotePanel } from "@/app/diary/[diary_code]/control-panel/selected-note-panel";
 import { SettingsPanel } from "@/app/diary/[diary_code]/control-panel/settings-panel";
 import { useDiaryStore } from "@/app/diary/[diary_code]/diary-store";
 import { Button } from "@/components/ui/button";
@@ -22,7 +23,7 @@ const tabsRaw = [
     name: "post",
     icon: CircleDotDashedIcon,
     writePermission: false,
-    content: <></>,
+    content: <SelectedNotePanel />,
   },
   {
     key: "notes",
@@ -59,10 +60,13 @@ export function DiaryLayout({ children }: React.PropsWithChildren) {
   const loadDiary = useDiaryStore((state) => state.loadDiary);
   const writePermission = useDiaryStore((state) => state.writePermission);
 
-  const [currentTab, setCurrentTab] = React.useState<TabKey>("post");
+  const currentTab = useDiaryStore((state) => state.currentTab);
+  const setCurrentTab = useDiaryStore((state) => state.setCurrentTab);
+
   let selectedTabData: TabData | null = null;
-  const availableTabs = tabs.filter((tab) => tab.key == currentTab);
-  if (availableTabs.length > 0) selectedTabData = availableTabs[0];
+  const availableCurrentTabs = tabs.filter((tab) => tab.key == currentTab);
+  if (availableCurrentTabs.length > 0)
+    selectedTabData = availableCurrentTabs[0];
 
   React.useEffect(() => {
     setIsOpen(true);
@@ -72,29 +76,26 @@ export function DiaryLayout({ children }: React.PropsWithChildren) {
     loadDiary(params.diary_code);
   }, [params.diary_code]);
 
+  const availableTabs = tabs.filter(
+    (x) => (x.writePermission && writePermission) || !x.writePermission,
+  );
+
   return (
     <div className="grid h-full min-h-0 grid-cols-[auto_auto_1fr] overflow-hidden">
       <Suspense>
-        <TabSelector
-          currentTab={currentTab}
-          onCurrentTabChange={setCurrentTab}
-        />
+        <TabSelector />
       </Suspense>
       <div className="flex flex-col bg-sidebar">
-        {tabs
-          .filter(
-            (x) => (x.writePermission && writePermission) || !x.writePermission,
-          )
-          .map((tab) => (
-            <div key={tab.key} className="w-[3.5rem]">
-              <TabButton
-                onClick={() => setCurrentTab(tab.key)}
-                active={currentTab == tab.key}
-                tab={tab}
-                key={tab.key}
-              />
-            </div>
-          ))}
+        {availableTabs.map((tab) => (
+          <div key={tab.key} className="w-[3.5rem]">
+            <TabButton
+              onClick={() => setCurrentTab(tab.key)}
+              active={currentTab == tab.key}
+              tab={tab}
+              key={tab.key}
+            />
+          </div>
+        ))}
       </div>
       <main className="grid grid-cols-[auto_1fr]">
         <div
@@ -103,7 +104,16 @@ export function DiaryLayout({ children }: React.PropsWithChildren) {
             { "w-[300px]": isOpen, "w-0": !isOpen },
           )}
         >
-          {selectedTabData ? selectedTabData.content : null}
+          {availableTabs.map((tab) => (
+            <div
+              key={tab.key}
+              className={classNames("h-full", {
+                hidden: selectedTabData?.key != tab.key,
+              })}
+            >
+              {tab.content}
+            </div>
+          ))}
         </div>
         <div className="relative">
           <Button
@@ -167,13 +177,10 @@ function TabButton({
   );
 }
 
-function TabSelector({
-  currentTab,
-  onCurrentTabChange,
-}: {
-  currentTab: TabKey;
-  onCurrentTabChange: (key: TabKey) => void;
-}) {
+function TabSelector({}: {}) {
+  const currentTab = useDiaryStore((state) => state.currentTab);
+  const setCurrentTab = useDiaryStore((state) => state.setCurrentTab);
+
   const tabParamKey = "tab";
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -200,9 +207,9 @@ function TabSelector({
         }
       }
       console.log(newSelectedTabKey);
-      onCurrentTabChange(newSelectedTabKey);
+      setCurrentTab(newSelectedTabKey);
     }
-  }, [selectedTab, onCurrentTabChange, writePermission]);
+  }, [selectedTab, setCurrentTab, writePermission]);
 
   React.useEffect(() => {
     if (!loaded) return;

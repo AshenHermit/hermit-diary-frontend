@@ -9,3 +9,5 @@ export type DiaryNote = {
 export type GlobalNote = DiaryNote & {
   diary: Diary;
 };
+
+export type VerboseNote = GlobalNote & {};
