@@ -1,3 +1,5 @@
+"use client";
+
 import { VerboseNote } from "@/services/types/notes";
 import React from "react";
 import { createStore, useStore } from "zustand";

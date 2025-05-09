@@ -16,8 +16,11 @@ export async function getDiaryNote(noteId: number) {
   return await apiClient.get<VerboseNote, {}>(`notes/${noteId}`);
 }
 
-export async function updateDiaryNote(note: DiaryNote) {
-  return await apiClient.patch<boolean, DiaryNote>(`notes/${note.id}`, note);
+export async function updateDiaryNote(note: Partial<VerboseNote>) {
+  return await apiClient.patch<boolean, Partial<VerboseNote>>(
+    `notes/${note.id}`,
+    note,
+  );
 }
 
 export async function deleteDiaryNote(note: DiaryNote) {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useDiaryStore } from "@/app/diary/[diary_code]/diary-store";
+import { useDiaryStore } from "@/app/(diary-view)/diary/[diary_code]/diary-store";
 import {
   Accordion,
   AccordionContent,

@@ -1,7 +1,7 @@
 "use client";
 
-import { DiaryTabPanel } from "@/app/diary/[diary_code]/control-panel/panel";
-import { useDiaryStore } from "@/app/diary/[diary_code]/diary-store";
+import { DiaryTabPanel } from "@/app/(diary-view)/diary/[diary_code]/control-panel/panel";
+import { useDiaryStore } from "@/app/(diary-view)/diary/[diary_code]/diary-store";
 import {
   ConfirmDialog,
   ConfirmDialogApi,

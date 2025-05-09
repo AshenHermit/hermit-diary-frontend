@@ -36,13 +36,7 @@ export default function RootLayout({
         <ErrorNotifier />
         <CookiesProvider>
           <Suspense>
-            <Providers>
-              <div className="grid min-h-[100vh] grid-rows-[auto_1fr_auto]">
-                <Header />
-                <div className="">{children}</div>
-                <Footer />
-              </div>
-            </Providers>
+            <Providers>{children}</Providers>
           </Suspense>
         </CookiesProvider>
       </body>

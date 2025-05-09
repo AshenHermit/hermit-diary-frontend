@@ -3,6 +3,7 @@
 import { HorizontalDivider } from "@/components/ui/horizontal-divider";
 import { LoadingSpinner } from "@/components/ui/spinner";
 import { useUserDiaries } from "@/hooks/api-hooks";
+import { makeLinkToDiary } from "@/lib/url-utils";
 import { Diary } from "@/services/types/diary";
 import { useUserStore } from "@/store/user-store";
 import { CircleDotDashed, CircleFadingPlus } from "lucide-react";
@@ -11,7 +12,7 @@ import React from "react";
 
 export default function Page() {
   return (
-    <div className="flex flex-col gap-4 h-full p-8">
+    <div className="flex h-full flex-col gap-4 p-8">
       <HorizontalDivider>Diaries</HorizontalDivider>
       <DiariesList />
     </div>
@@ -22,12 +23,12 @@ function DiariesList() {
   const userLoaded = useUserStore((state) => state.loaded);
   const userId = useUserStore((state) => state.id);
   const { diaries, loadDiaries, addDiary, isLoaded } = useUserDiaries(
-    userLoaded ? userId : undefined
+    userLoaded ? userId : undefined,
   );
 
   if (!isLoaded)
     return (
-      <div className="flex w-full min-h-[200px] items-center justify-center">
+      <div className="flex min-h-[200px] w-full items-center justify-center">
         <LoadingSpinner />
       </div>
     );
@@ -50,9 +51,9 @@ function DiaryCard({
   onUpdate?: () => void;
 }) {
   return (
-    <Link href={`/diary/${diary.id}`}>
-      <div className="h-[200px] bg-muted grid grid-rows-[1fr_auto] rounded-2xl overflow-hidden transition-all hover:scale-105">
-        <div className="flex justify-center items-center bg-sidebar cursor-pointer">
+    <Link href={makeLinkToDiary(diary.id)}>
+      <div className="grid h-[200px] grid-rows-[1fr_auto] overflow-hidden rounded-2xl bg-muted transition-all hover:scale-105">
+        <div className="flex cursor-pointer items-center justify-center bg-sidebar">
           <CircleDotDashed />
         </div>
         <div className="border-t-2 border-gray-950 p-4">{diary.name}</div>
@@ -65,7 +66,7 @@ function AddNewDiaryCard(props: React.ComponentProps<"div">) {
   return (
     <div
       {...props}
-      className="cursor-pointer transition-all hover:scale-105 text-muted h-[200px] flex gap-4 justify-center flex-col items-center rounded-2xl overflow-hidden border-dashed border-2 border-muted"
+      className="flex h-[200px] cursor-pointer flex-col items-center justify-center gap-4 overflow-hidden rounded-2xl border-2 border-dashed border-muted text-muted transition-all hover:scale-105"
     >
       <CircleFadingPlus />
       <div>new diary</div>

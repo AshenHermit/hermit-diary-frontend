@@ -1,5 +1,6 @@
 "use client";
 
+import { NoteContentEditor } from "@/components/note-editor/note-content-editor";
 import {
   NoteStoreConfig,
   NoteStoreProvider,
@@ -63,6 +64,7 @@ export function NoteViewer({ className, ...props }: NoteFramePanelProps) {
   return (
     <div {...props} className={classNames("flex flex-col gap-4", className)}>
       <NoteHeader />
+      <NoteContentEditor readOnly />
     </div>
   );
 }
@@ -71,7 +73,7 @@ export function NoteEditor({ className, ...props }: NoteFramePanelProps) {
   return (
     <div {...props} className={classNames("flex flex-col gap-4", className)}>
       <NoteHeader />
-      asdasd
+      <NoteContentEditor />
     </div>
   );
 }
@@ -140,8 +142,8 @@ function NoteTitle() {
       debounce((data: z.infer<typeof titleFormSchema>) => {
         const dataToUpdate = titleFormSchema.parse(data);
         handleRequest(async () => {
+          await updateDiaryNote({ id: note.id, ...dataToUpdate });
           let newNote = { ...note, ...dataToUpdate };
-          await updateDiaryNote(newNote);
           setNote(newNote);
           toast({ title: "Saved!", description: "note saved" });
         });

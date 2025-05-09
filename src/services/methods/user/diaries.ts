@@ -6,13 +6,13 @@ export async function getUserDiaries(userId: number) {
   return await apiClient.get<Diary[], {}>(`users/${userId}/diaries`);
 }
 
-export async function getDiary(diaryCode: string) {
-  return await apiClient.get<Diary, {}>(`diaries/${Number(diaryCode)}`);
+export async function getDiary(diaryId: number) {
+  return await apiClient.get<Diary, {}>(`diaries/${diaryId}`);
 }
 
-export async function getDiaryWritePermission(diaryCode: string) {
+export async function getDiaryWritePermission(diaryId: number) {
   return await apiClient.get<boolean, {}>(
-    `diaries/${Number(diaryCode)}/write_permission`,
+    `diaries/${diaryId}/write_permission`,
   );
 }
 

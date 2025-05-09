@@ -1,6 +1,7 @@
 "use client";
 
 import { useUserStore } from "@store/user-store";
+import { ThemeProvider } from "next-themes";
 import React from "react";
 
 export function UserProvider() {
@@ -16,8 +17,10 @@ export function UserProvider() {
 export function Providers({ children }: React.PropsWithChildren) {
   return (
     <>
-      <UserProvider />
-      {children}
+      <ThemeProvider defaultTheme="dark" themes={["dark", "light"]}>
+        <UserProvider />
+        {children}
+      </ThemeProvider>
     </>
   );
 }

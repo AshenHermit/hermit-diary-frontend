@@ -10,4 +10,6 @@ export type GlobalNote = DiaryNote & {
   diary: Diary;
 };
 
-export type VerboseNote = GlobalNote & {};
+export type VerboseNote = GlobalNote & {
+  content: Record<string, any>;
+};

@@ -1,10 +1,10 @@
 "use client";
 
-import { DiaryTabPanel } from "@/app/diary/[diary_code]/control-panel/panel";
+import { DiaryTabPanel } from "@/app/(diary-view)/diary/[diary_code]/control-panel/panel";
 import {
   useDiaryNote,
   useDiaryStore,
-} from "@/app/diary/[diary_code]/diary-store";
+} from "@/app/(diary-view)/diary/[diary_code]/diary-store";
 import { NoteFrame } from "@/components/note-editor/note-frame";
 import { LoadingSpinner } from "@/components/ui/spinner";
 import React from "react";

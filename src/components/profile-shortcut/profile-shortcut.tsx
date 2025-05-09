@@ -1,6 +1,6 @@
 "use client";
 
-import { profileLinks } from "@/app/profile/sidebar-layout";
+import { profileLinks } from "@/app/(routing)/profile/sidebar-layout";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {

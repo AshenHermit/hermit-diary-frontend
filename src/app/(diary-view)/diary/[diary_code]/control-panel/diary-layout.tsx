@@ -1,10 +1,11 @@
 "use client";
 
-import { NotesManager } from "@/app/diary/[diary_code]/control-panel/notes-manager";
-import { SelectedNotePanel } from "@/app/diary/[diary_code]/control-panel/selected-note-panel";
-import { SettingsPanel } from "@/app/diary/[diary_code]/control-panel/settings-panel";
-import { useDiaryStore } from "@/app/diary/[diary_code]/diary-store";
+import { NotesManager } from "@/app/(diary-view)/diary/[diary_code]/control-panel/notes-manager";
+import { SelectedNotePanel } from "@/app/(diary-view)/diary/[diary_code]/control-panel/selected-note-panel";
+import { SettingsPanel } from "@/app/(diary-view)/diary/[diary_code]/control-panel/settings-panel";
+import { useDiaryStore } from "@/app/(diary-view)/diary/[diary_code]/diary-store";
 import { Button } from "@/components/ui/button";
+import { decodeId } from "@/lib/hash-utils";
 import { useUserStore } from "@/store/user-store";
 import classNames from "classnames";
 import {
@@ -73,7 +74,7 @@ export function DiaryLayout({ children }: React.PropsWithChildren) {
   }, [currentTab]);
 
   React.useEffect(() => {
-    loadDiary(params.diary_code);
+    loadDiary(decodeId("diary", params.diary_code));
   }, [params.diary_code]);
 
   const availableTabs = tabs.filter(
@@ -97,17 +98,17 @@ export function DiaryLayout({ children }: React.PropsWithChildren) {
           </div>
         ))}
       </div>
-      <main className="grid grid-cols-[auto_1fr]">
+      <main className="grid h-0 min-h-full grid-cols-[auto_1fr]">
         <div
           className={classNames(
             "overflow-x-hidden bg-background transition-all",
-            { "w-[300px]": isOpen, "w-0": !isOpen },
+            { "w-[500px]": isOpen, "w-0": !isOpen },
           )}
         >
           {availableTabs.map((tab) => (
             <div
               key={tab.key}
-              className={classNames("h-full", {
+              className={classNames("h-full max-h-full overflow-y-auto", {
                 hidden: selectedTabData?.key != tab.key,
               })}
             >

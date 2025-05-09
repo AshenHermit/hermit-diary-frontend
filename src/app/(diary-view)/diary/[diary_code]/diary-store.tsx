@@ -1,6 +1,6 @@
 "use client";
 
-import { TabKey } from "@/app/diary/[diary_code]/control-panel/diary-layout";
+import { TabKey } from "@/app/(diary-view)/diary/[diary_code]/control-panel/diary-layout";
 import {
   getDiary,
   getDiaryWritePermission,
@@ -14,7 +14,7 @@ import { createStore, StoreApi, useStore } from "zustand";
 export type DiaryProps = Diary & {
   writePermission: boolean;
   loaded: boolean;
-  loadDiary: (diaryCode: string) => Promise<void>;
+  loadDiary: (diaryId: number) => Promise<void>;
   loadNotes: () => Promise<void>;
   currentTab: TabKey;
   setCurrentTab: (key: TabKey) => void;
@@ -45,10 +45,10 @@ const createDiaryStore = () => {
       setCurrentTab(tab) {
         set({ currentTab: tab });
       },
-      async loadDiary(diaryCode) {
+      async loadDiary(diaryId) {
         try {
-          const diary = await getDiary(diaryCode);
-          const writePermission = await getDiaryWritePermission(diaryCode);
+          const diary = await getDiary(diaryId);
+          const writePermission = await getDiaryWritePermission(diaryId);
           const notes = await getDiaryNotes(diary.id);
           let selectedNote = get().selectedNote;
           if (selectedNote) {
