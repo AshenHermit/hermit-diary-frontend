@@ -119,13 +119,14 @@ export function DiaryLayout({ children }: React.PropsWithChildren) {
         <div className="relative">
           <Button
             variant={"ghost"}
-            className="absolute left-0 top-0 h-10 w-10 p-2"
+            className="absolute left-0 top-0 z-10 h-10 w-10 p-2"
             onClick={() => setIsOpen(!isOpen)}
           >
             <PanelRightIcon />
           </Button>
         </div>
       </main>
+      {children}
     </div>
   );
 }
@@ -216,7 +217,7 @@ function TabSelector({}: {}) {
     if (!loaded) return;
     const params = new URLSearchParams(searchParams.toString());
     params.set(tabParamKey, currentTab);
-    router.push(`?${params.toString()}`);
+    router.replace(`?${params.toString()}`);
   }, [currentTab, loaded]);
 
   return null;
