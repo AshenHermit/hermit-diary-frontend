@@ -12,6 +12,10 @@ export async function getDiaryNotes(diaryId: number) {
   });
 }
 
+export async function getNoteWritePermission(noteId: number) {
+  return await apiClient.get<boolean, {}>(`notes/${noteId}/write_permission`);
+}
+
 export async function getDiaryNote(noteId: number) {
   return await apiClient.get<VerboseNote, {}>(`notes/${noteId}`);
 }

@@ -27,6 +27,7 @@ import debounce from "just-debounce-it";
 import { useRequestHandler } from "@/hooks/use-request-handler";
 import { updateDiaryNote } from "@/services/methods/user/notes";
 import { useToast } from "@/hooks/use-toast";
+import { NoteReferencePlugin } from "@/components/note-editor/plugins/note-reference";
 
 const plugins = [
   Paragraph,
@@ -40,7 +41,14 @@ const plugins = [
   BulletedList,
   TodoList,
   Link,
-  Embed,
+  NoteReferencePlugin,
+  Embed.extend({
+    options: {
+      maxSizes: {
+        maxWidth: 400,
+      },
+    },
+  }),
   Image.extend({
     options: {
       async onUpload(file) {
@@ -73,6 +81,7 @@ const TOOLS = {
 export function NoteContentEditor({ readOnly }: { readOnly?: boolean }) {
   const { toast } = useToast();
   const note = useNoteStore((state) => state.note);
+  const onNoteUpdate = useNoteStore((state) => state.onNoteUpdate);
 
   const editor = React.useMemo(() => createYooptaEditor(), []);
   const [value, setValue] = React.useState<YooptaContentValue>(note.content);
@@ -86,6 +95,7 @@ export function NoteContentEditor({ readOnly }: { readOnly?: boolean }) {
         handleRequest(async () => {
           let updateData = { id: note.id, content: data };
           await updateDiaryNote(updateData);
+          if (onNoteUpdate) onNoteUpdate({ ...note, ...updateData });
           toast({ title: "Saved!", description: "note contents saved" });
         });
       }, 500),

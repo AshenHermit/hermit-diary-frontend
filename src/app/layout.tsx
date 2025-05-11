@@ -5,14 +5,15 @@ import { Header } from "@components/layout/header";
 import { Footer } from "@components/layout/footer";
 import classNames from "classnames";
 
-import { Roboto_Slab } from "next/font/google";
+import { Montserrat, Roboto_Slab } from "next/font/google";
 import { SessionProvider } from "next-auth/react";
 import { Providers } from "../providers/providers";
 import { ErrorNotifier } from "@/components/layout/error-notifier";
 import { Toaster } from "@/components/ui/toaster";
 import { CookiesProvider } from "next-client-cookies/server";
 
-const font = Roboto_Slab({ subsets: ["latin", "cyrillic"] });
+// const font = Roboto_Slab({ subsets: ["latin", "cyrillic"] });
+const font = Montserrat({ subsets: ["latin", "cyrillic"] });
 
 export const metadata: Metadata = {
   title: "Hermits Diary",

@@ -10,6 +10,10 @@ export type NoteStoreConfig = {
   onNoteUpdate?: (note: VerboseNote) => void;
   editMode?: boolean;
   setEditMode?: (value: boolean) => void;
+  onNoteLinkUsed?: (noteId: number) => void;
+  classNames?: {
+    title?: string;
+  };
 };
 
 export type NoteStoreType = NoteStoreConfig & {
@@ -18,10 +22,12 @@ export type NoteStoreType = NoteStoreConfig & {
   setEditMode: (value: boolean) => void;
   note: VerboseNote;
   setNote: (note: VerboseNote) => void;
+  defClassNames: NonNullable<NoteStoreConfig["classNames"]>;
 };
 
 const createNoteStore = (note: VerboseNote, config: NoteStoreConfig) => {
   return createStore<NoteStoreType>((set, get) => ({
+    defClassNames: { title: "", ...config.classNames },
     ...config,
     ...{
       note: note,

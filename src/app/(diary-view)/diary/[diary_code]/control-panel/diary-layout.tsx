@@ -83,6 +83,7 @@ export function DiaryLayout({ children }: React.PropsWithChildren) {
 
   return (
     <div className="grid h-full min-h-0 grid-cols-[auto_auto_1fr] overflow-hidden">
+      <SelectedNoteLoader />
       <Suspense>
         <TabSelector />
       </Suspense>
@@ -102,7 +103,10 @@ export function DiaryLayout({ children }: React.PropsWithChildren) {
         <div
           className={classNames(
             "overflow-x-hidden bg-background transition-all",
-            { "w-[500px]": isOpen, "w-0": !isOpen },
+            {
+              "w-[500px]": isOpen,
+              "w-0": !isOpen,
+            },
           )}
         >
           {availableTabs.map((tab) => (
@@ -219,6 +223,33 @@ function TabSelector({}: {}) {
     params.set(tabParamKey, currentTab);
     router.replace(`?${params.toString()}`);
   }, [currentTab, loaded]);
+
+  return null;
+}
+
+function SelectedNoteLoader({}) {
+  const selectedNote = useDiaryStore((state) => state.selectedNote);
+  const setSelectedNote = useDiaryStore((state) => state.setSelectedNote);
+  const notes = useDiaryStore((state) => state.notes);
+  const storageKey = "lastSelectedNote";
+
+  React.useEffect(() => {
+    if (!selectedNote) {
+      const lastNoteKey = localStorage.getItem(storageKey);
+      if (lastNoteKey) {
+        const noteSearch = notes.filter((x) => x.id == Number(lastNoteKey));
+        if (noteSearch.length > 0) {
+          setSelectedNote(noteSearch[0]);
+        }
+      }
+    }
+  }, [notes]);
+
+  React.useEffect(() => {
+    if (selectedNote) {
+      localStorage.setItem(storageKey, selectedNote.id.toString());
+    }
+  }, [selectedNote]);
 
   return null;
 }
