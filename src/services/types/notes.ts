@@ -2,6 +2,8 @@ import { Diary } from "@/services/types/diary";
 
 export type NoteBase = {
   id: number;
+  createdAt: string;
+  updatedAt: string;
   name: string;
   isPublic: boolean;
 };

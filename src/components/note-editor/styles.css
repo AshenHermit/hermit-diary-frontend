@@ -56,6 +56,9 @@
       --tw-bg-opacity: 0.2;
       background-color: rgb(219 216 224 / var(--tw-bg-opacity));
     }
+    .yoopta-divider hr {
+      border-color: rgb(84 84 84) !important;
+    }
   }
 }
 

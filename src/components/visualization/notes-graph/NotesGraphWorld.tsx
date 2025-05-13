@@ -100,6 +100,8 @@ export function NotesGraphWorld({
 
         node.vx *= damping;
         node.vy *= damping;
+        // node.vx *= Math.min(0.99, damping + Math.abs(node.vx) / 1);
+        // node.vy *= Math.min(0.99, damping + Math.abs(node.vy) / 1);
       }
     }
     let animatingState = { animating: true };

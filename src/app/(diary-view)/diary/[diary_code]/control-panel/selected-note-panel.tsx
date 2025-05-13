@@ -15,7 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { LoadingSpinner } from "@/components/ui/spinner";
 import { DiaryNote, NoteBase } from "@/services/types/notes";
-import { LinkIcon } from "lucide-react";
+import { ArrowDownRight, ArrowUpLeft, LinkIcon } from "lucide-react";
 import React from "react";
 
 export function SelectedNotePanel() {
@@ -78,7 +78,9 @@ export function SelectedNotePanel() {
             </AccordionTrigger>
             <AccordionContent className="flex flex-col gap-2">
               {note.incomingLinks.length > 0 ? (
-                <div className="text-white">Incoming links</div>
+                <div className="flex items-center gap-2 text-base text-white">
+                  <ArrowDownRight /> Incoming links
+                </div>
               ) : null}
               {note.incomingLinks.map((x) => (
                 <ReferenceLink
@@ -87,8 +89,11 @@ export function SelectedNotePanel() {
                   onClick={() => onLink(x.id)}
                 />
               ))}
+              <hr />
               {note.outcomingLinks.length > 0 ? (
-                <div className="text-white">Outcoming links</div>
+                <div className="flex items-center gap-2 text-base text-white">
+                  <ArrowUpLeft /> Outcoming links
+                </div>
               ) : null}
               {note.outcomingLinks.map((x) => (
                 <ReferenceLink

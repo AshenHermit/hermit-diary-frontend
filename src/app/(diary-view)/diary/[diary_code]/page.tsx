@@ -12,7 +12,7 @@ export default function Page() {
 
   const onSelectedNote = (note: DiaryNote) => {
     setSelectedNote(note);
-    setCurrentTab("post");
+    setCurrentTab("note");
   };
 
   return (

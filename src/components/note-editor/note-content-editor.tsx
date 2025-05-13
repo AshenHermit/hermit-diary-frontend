@@ -80,7 +80,8 @@ const TOOLS = {
 
 export function NoteContentEditor({ readOnly }: { readOnly?: boolean }) {
   const { toast } = useToast();
-  const note = useNoteStore((state) => state.note);
+  const actualNote = useNoteStore((state) => state.note);
+  const note = React.useMemo(() => actualNote, [actualNote.id]);
   const onNoteUpdate = useNoteStore((state) => state.onNoteUpdate);
 
   const editor = React.useMemo(() => createYooptaEditor(), []);

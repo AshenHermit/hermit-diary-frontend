@@ -29,6 +29,7 @@ import { Input } from "@/components/ui/input";
 import { useRequestHandler } from "@/hooks/use-request-handler";
 import { useToast } from "@/hooks/use-toast";
 import { encodeId } from "@/lib/hash-utils";
+import { strToFormattedDateTime } from "@/lib/time-utils";
 import { updateDiaryNote } from "@/services/methods/user/notes";
 import { VerboseNote } from "@/services/types/notes";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -117,7 +118,7 @@ function NoteHeader() {
             ) : (
               <DropdownMenuItem asChild className="cursor-pointer">
                 <Link
-                  href={`/diary/${encodeId("diary", note.diary.id)}?note=${encodeId("note", note.id)}`}
+                  href={`/diary/${encodeId("diary", note.diary.id)}?note=${encodeId("note", note.id)}&tab=note`}
                   className="focus-visible:ring-0"
                 >
                   <CircleDotDashed /> open in diary

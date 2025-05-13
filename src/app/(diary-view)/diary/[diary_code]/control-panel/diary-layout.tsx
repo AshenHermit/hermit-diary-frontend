@@ -5,7 +5,7 @@ import { SelectedNotePanel } from "@/app/(diary-view)/diary/[diary_code]/control
 import { SettingsPanel } from "@/app/(diary-view)/diary/[diary_code]/control-panel/settings-panel";
 import { useDiaryStore } from "@/app/(diary-view)/diary/[diary_code]/diary-store";
 import { Button } from "@/components/ui/button";
-import { decodeId } from "@/lib/hash-utils";
+import { decodeId, encodeId } from "@/lib/hash-utils";
 import { useUserStore } from "@/store/user-store";
 import classNames from "classnames";
 import {
@@ -20,15 +20,15 @@ import React, { Suspense } from "react";
 
 const tabsRaw = [
   {
-    key: "post",
-    name: "post",
+    key: "note",
+    name: "note",
     icon: CircleDotDashedIcon,
     writePermission: false,
     content: <SelectedNotePanel />,
   },
   {
-    key: "notes",
-    name: "notes",
+    key: "tree",
+    name: "tree",
     icon: FolderTreeIcon,
     writePermission: false,
     content: <NotesManager />,
@@ -83,8 +83,8 @@ export function DiaryLayout({ children }: React.PropsWithChildren) {
 
   return (
     <div className="grid h-full min-h-0 grid-cols-[auto_auto_1fr] overflow-hidden">
-      <SelectedNoteLoader />
       <Suspense>
+        <SelectedNoteLoader />
         <TabSelector />
       </Suspense>
       <div className="flex flex-col bg-sidebar">
@@ -232,8 +232,23 @@ function SelectedNoteLoader({}) {
   const setSelectedNote = useDiaryStore((state) => state.setSelectedNote);
   const notes = useDiaryStore((state) => state.notes);
   const storageKey = "lastSelectedNote";
+  const noteParamKey = "note";
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const loaded = useDiaryStore((state) => state.loaded);
 
   React.useEffect(() => {
+    const paramNoteCode = searchParams.get(noteParamKey);
+    if (paramNoteCode) {
+      const noteId = decodeId("note", paramNoteCode);
+      if (noteId) {
+        const noteSearch = notes.filter((x) => x.id == noteId);
+        if (noteSearch.length > 0) {
+          setSelectedNote(noteSearch[0]);
+        }
+      }
+      return;
+    }
     if (!selectedNote) {
       const lastNoteKey = localStorage.getItem(storageKey);
       if (lastNoteKey) {
@@ -248,6 +263,9 @@ function SelectedNoteLoader({}) {
   React.useEffect(() => {
     if (selectedNote) {
       localStorage.setItem(storageKey, selectedNote.id.toString());
+      const params = new URLSearchParams(searchParams.toString());
+      params.set(noteParamKey, encodeId("note", selectedNote.id));
+      router.replace(`?${params.toString()}`);
     }
   }, [selectedNote]);
 

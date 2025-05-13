@@ -14,7 +14,7 @@ export default async function Page({
 
   return (
     <div className="flex h-full flex-col items-center justify-center">
-      <div className="min-w-[1000px] rounded-2xl bg-background p-8">
+      <div className="min-h-[80vh] min-w-[1200px] rounded-2xl bg-background p-8">
         <NoteView serverNote={note} noteId={noteId} />
       </div>
     </div>

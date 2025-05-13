@@ -1,4 +1,5 @@
-import { Diary } from "@/services/types/diary";
+import { Diary, DiaryProperties } from "@/services/types/diary";
+import { PropertiesDTO } from "@/services/types/properties";
 import { apiClient } from "@services/api-client/client-api";
 import { User } from "@services/types/user";
 
@@ -24,6 +25,23 @@ export async function updateDiary(data: Partial<Diary>) {
   return await apiClient.patch<boolean, Partial<Diary>>(
     `diaries/${data.id}`,
     data,
+  );
+}
+
+export async function getDiaryProperties(diaryId: number) {
+  return (
+    await apiClient.get<PropertiesDTO<DiaryProperties>, {}>(
+      `diaries/${diaryId}/properties`,
+    )
+  ).properties;
+}
+export async function updateDiaryProperties(
+  diaryId: number,
+  data: DiaryProperties,
+) {
+  return await apiClient.patch<boolean, PropertiesDTO<DiaryProperties>>(
+    `diaries/${diaryId}/properties`,
+    { properties: data },
   );
 }
 

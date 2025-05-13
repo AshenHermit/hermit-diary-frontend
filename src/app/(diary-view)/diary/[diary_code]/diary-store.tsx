@@ -3,16 +3,18 @@
 import { TabKey } from "@/app/(diary-view)/diary/[diary_code]/control-panel/diary-layout";
 import {
   getDiary,
+  getDiaryProperties,
   getDiaryWritePermission,
 } from "@/services/methods/user/diaries";
 import { getDiaryNote, getDiaryNotes } from "@/services/methods/user/notes";
-import { Diary } from "@/services/types/diary";
+import { Diary, DiaryProperties } from "@/services/types/diary";
 import { DiaryNote, VerboseNote } from "@/services/types/notes";
 import React from "react";
 import { createStore, StoreApi, useStore } from "zustand";
 
 export type DiaryProps = Diary & {
   writePermission: boolean;
+  properties: DiaryProperties;
   loaded: boolean;
   loadDiary: (diaryId: number) => Promise<void>;
   loadNotes: () => Promise<void>;
@@ -28,12 +30,15 @@ export const defaultDiary: Diary = {
   isPublic: true,
   name: "untitled",
   picture: "",
+  createdAt: "",
+  updatedAt: "",
 };
 
 const createDiaryStore = () => {
   return createStore<DiaryProps>((set, get) => ({
     ...defaultDiary,
     ...{
+      properties: {},
       selectedNote: null,
       setSelectedNote(note) {
         set({ selectedNote: note });
@@ -41,7 +46,7 @@ const createDiaryStore = () => {
       writePermission: false,
       loaded: false,
       notes: [],
-      currentTab: "notes",
+      currentTab: "tree",
       setCurrentTab(tab) {
         set({ currentTab: tab });
       },
@@ -50,6 +55,7 @@ const createDiaryStore = () => {
           const diary = await getDiary(diaryId);
           const writePermission = await getDiaryWritePermission(diaryId);
           const notes = await getDiaryNotes(diary.id);
+          const properties = await getDiaryProperties(diary.id);
           let selectedNote = get().selectedNote;
           if (selectedNote) {
             let newNoteSelection = notes.filter(
@@ -62,6 +68,7 @@ const createDiaryStore = () => {
             ...diary,
             notes,
             writePermission,
+            properties,
             loaded: true,
             selectedNote: selectedNote,
           });

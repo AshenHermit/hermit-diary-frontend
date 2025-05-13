@@ -38,7 +38,7 @@ import { deleteDiary, updateDiary } from "@/services/methods/user/diaries";
 import { Diary } from "@/services/types/diary";
 import { zodResolver } from "@hookform/resolvers/zod";
 import debounce from "just-debounce-it";
-import { CircleDashedIcon, TriangleAlertIcon } from "lucide-react";
+import { BoltIcon, CircleDashedIcon, TriangleAlertIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { useForm } from "react-hook-form";
@@ -55,6 +55,15 @@ const sections = [
     content: <GeneralSettings />,
   },
   {
+    key: "properties",
+    title: (
+      <>
+        <BoltIcon /> Свойства
+      </>
+    ),
+    content: <PropertiesSection />,
+  },
+  {
     key: "danger",
     title: (
       <>
@@ -69,7 +78,7 @@ export function SettingsPanel() {
   return (
     <DiaryTabPanel>
       <div className="text-lg font-semibold">Настройки дневника</div>
-      <Accordion type="multiple" defaultValue={sections.map((x) => x.key)}>
+      <Accordion type="multiple" defaultValue={["general"]}>
         {sections.map((x) => (
           <AccordionItem key={x.key} value={x.key}>
             <AccordionTrigger className="text-lg">{x.title}</AccordionTrigger>
@@ -196,4 +205,8 @@ function DangerZoneSection() {
       </Button>
     </>
   );
+}
+
+function PropertiesSection() {
+  return <div>asdad</div>;
 }

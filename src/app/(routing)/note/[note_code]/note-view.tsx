@@ -8,13 +8,15 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
+import { NotesGraph } from "@/components/visualization/notes-graph/notes-graph";
 import { encodeId } from "@/lib/hash-utils";
+import { strToFormattedDateTime } from "@/lib/time-utils";
 import {
   getDiaryNote,
   getNoteWritePermission,
 } from "@/services/methods/user/notes";
 import { NoteBase, VerboseNote } from "@/services/types/notes";
-import { LinkIcon } from "lucide-react";
+import { ArrowDownRight, ArrowUpLeft, InfoIcon, LinkIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React from "react";
 
@@ -60,43 +62,69 @@ export function NoteView({
   }
 
   return (
-    <div>
-      <NoteFrame
-        note={note}
-        config={{
-          canEdit: writePermission,
-          onNoteUpdate: () => fetchNote(),
-          editMode,
-          defaultEditMode: editMode,
-          setEditMode,
-          onNoteLinkUsed: onLink,
-          classNames: {
-            title: "!text-2xl font-bold",
-          },
-        }}
-      />
-      <Accordion type="multiple">
-        <AccordionItem value="references">
-          <AccordionTrigger>
-            <LinkIcon /> References
-          </AccordionTrigger>
-          <AccordionContent className="flex flex-col gap-2">
-            {note.incomingLinks.length > 0 ? (
-              <div className="text-white">Incoming links</div>
-            ) : null}
-            {note.incomingLinks.map((x) => (
-              <ReferenceLink key={x.id} note={x} onClick={() => onLink(x.id)} />
-            ))}
-            {note.outcomingLinks.length > 0 ? (
-              <div className="text-white">Outcoming links</div>
-            ) : null}
-            {note.outcomingLinks.map((x) => (
-              <ReferenceLink key={x.id} note={x} onClick={() => onLink(x.id)} />
-            ))}
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
-    </div>
+    <>
+      <EditModeLoader value={editMode} onValueChange={setEditMode} />
+      <div className="grid h-full grid-cols-[200px_1px_1fr_1px_200px] gap-6">
+        <div className="flex flex-col gap-2">
+          {note.incomingLinks.length > 0 ? (
+            <div className="flex items-center gap-2 text-base text-white">
+              <ArrowDownRight /> Incoming links
+            </div>
+          ) : null}
+          {note.incomingLinks.map((x) => (
+            <ReferenceLink key={x.id} note={x} onClick={() => onLink(x.id)} />
+          ))}
+          <hr />
+          {note.outcomingLinks.length > 0 ? (
+            <div className="flex items-center gap-2 text-base text-white">
+              <ArrowUpLeft /> Outcoming links
+            </div>
+          ) : null}
+          {note.outcomingLinks.map((x) => (
+            <ReferenceLink key={x.id} note={x} onClick={() => onLink(x.id)} />
+          ))}
+          <Accordion type="multiple">
+            <AccordionItem value="info">
+              <AccordionTrigger>
+                <InfoIcon /> Info
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="flex flex-col gap-2 text-xs proportional-nums tracking-wide text-white opacity-50">
+                  <div className="flex items-center justify-between">
+                    <span>created at:</span>{" "}
+                    <span className="w-min tabular-nums">
+                      {strToFormattedDateTime(note.createdAt)}
+                    </span>
+                  </div>
+                  <div className="text- flex items-center justify-between">
+                    <span>updated at:</span>
+                    <span className="w-min tabular-nums">
+                      {strToFormattedDateTime(note.updatedAt)}
+                    </span>
+                  </div>
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </div>
+        <div className="bg-white opacity-20"></div>
+        <NoteFrame
+          note={note}
+          config={{
+            canEdit: writePermission,
+            onNoteUpdate: () => fetchNote(),
+            editMode,
+            defaultEditMode: editMode,
+            setEditMode,
+            onNoteLinkUsed: onLink,
+            classNames: {
+              title: "!text-2xl font-bold",
+            },
+          }}
+        />
+        <div className="bg-white opacity-20"></div>
+      </div>
+    </>
   );
 }
 
@@ -115,4 +143,27 @@ function ReferenceLink({
       {note.name}
     </Button>
   );
+}
+
+function EditModeLoader({
+  value,
+  onValueChange,
+}: {
+  value: boolean;
+  onValueChange: (val: boolean) => void;
+}) {
+  const storageKey = "editMode";
+
+  React.useEffect(() => {
+    const lastNoteKey = localStorage.getItem(storageKey);
+    if (lastNoteKey == "true") {
+      onValueChange(true);
+    }
+  }, []);
+
+  React.useEffect(() => {
+    localStorage.setItem(storageKey, value ? "true" : "false");
+  }, [value]);
+
+  return null;
 }

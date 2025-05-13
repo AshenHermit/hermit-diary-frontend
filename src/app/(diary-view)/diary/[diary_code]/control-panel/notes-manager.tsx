@@ -63,7 +63,7 @@ function NoteItem({ note }: { note: DiaryNote }) {
 
   const onClick = React.useCallback(() => {
     setSelectedNote(note);
-    setCurrentTab("post");
+    setCurrentTab("note");
   }, [setCurrentTab]);
 
   return (
