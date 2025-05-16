@@ -1,13 +1,20 @@
 "use client";
 
-import { TabKey } from "@/app/(diary-view)/diary/[diary_code]/control-panel/diary-layout";
+import {
+  TabKey,
+  ViewKey,
+} from "@/app/(diary-view)/diary/[diary_code]/control-panel/diary-layout";
 import {
   getDiary,
   getDiaryProperties,
   getDiaryWritePermission,
 } from "@/services/methods/user/diaries";
 import { getDiaryNote, getDiaryNotes } from "@/services/methods/user/notes";
-import { Diary, DiaryProperties } from "@/services/types/diary";
+import {
+  defaultDiaryProperties,
+  Diary,
+  DiaryProperties,
+} from "@/services/types/diary";
 import { DiaryNote, VerboseNote } from "@/services/types/notes";
 import React from "react";
 import { createStore, StoreApi, useStore } from "zustand";
@@ -18,8 +25,11 @@ export type DiaryProps = Diary & {
   loaded: boolean;
   loadDiary: (diaryId: number) => Promise<void>;
   loadNotes: () => Promise<void>;
+  loadProperties: () => Promise<void>;
   currentTab: TabKey;
   setCurrentTab: (key: TabKey) => void;
+  currentView: ViewKey;
+  setCurrentView: (key: ViewKey) => void;
   notes: DiaryNote[];
   selectedNote: DiaryNote | null;
   setSelectedNote: (note: DiaryNote | null) => void;
@@ -38,7 +48,7 @@ const createDiaryStore = () => {
   return createStore<DiaryProps>((set, get) => ({
     ...defaultDiary,
     ...{
-      properties: {},
+      properties: defaultDiaryProperties,
       selectedNote: null,
       setSelectedNote(note) {
         set({ selectedNote: note });
@@ -49,6 +59,10 @@ const createDiaryStore = () => {
       currentTab: "tree",
       setCurrentTab(tab) {
         set({ currentTab: tab });
+      },
+      currentView: "graph",
+      setCurrentView(view) {
+        set({ currentView: view });
       },
       async loadDiary(diaryId) {
         try {
@@ -68,7 +82,7 @@ const createDiaryStore = () => {
             ...diary,
             notes,
             writePermission,
-            properties,
+            properties: { ...defaultDiaryProperties, ...properties },
             loaded: true,
             selectedNote: selectedNote,
           });
@@ -81,6 +95,14 @@ const createDiaryStore = () => {
           const notes = await getDiaryNotes(get().id);
           set({ notes });
         } catch (e) {}
+      },
+      async loadProperties() {
+        try {
+          const properties = await getDiaryProperties(get().id);
+          set({ properties: { ...defaultDiaryProperties, ...properties } });
+        } catch (e) {
+          console.error("Failed to load diary properties:", e);
+        }
       },
     },
   }));

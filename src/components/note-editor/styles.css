@@ -43,6 +43,17 @@
       border-width: 0;
       z-index: 50 !important;
     }
+    .yoopta-link-tool {
+      background-color: #1f1f1f;
+      border: 0;
+    }
+    .yoopta-link {
+      color: var(--accent-color) !important;
+    }
+    .yoopta-link-tool-input {
+      background-color: #1f1f1f;
+      color: #fff;
+    }
     .yoopta-action-menu-list-content svg {
       color: #1f1f1f;
     }

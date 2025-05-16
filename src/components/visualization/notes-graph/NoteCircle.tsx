@@ -1,6 +1,6 @@
 "use client";
 
-import { DiaryNote } from "@/services/types/notes";
+import { DiaryNote, getNoteProps } from "@/services/types/notes";
 import Konva from "konva";
 import React, { forwardRef } from "react";
 import { Circle, Group, Text } from "react-konva";
@@ -9,17 +9,28 @@ export type NoteCircleProps = {
   note: DiaryNote;
   active?: boolean;
   onSelected?: (note: DiaryNote) => void;
+  accentColor?: string;
 };
 export type NoteCirlceApi = Konva.Group & {
   vx: number;
   vy: number;
   radius: number;
   note: DiaryNote;
+  setCircleSize: (size: number) => void;
 };
 
 export const NoteCircle = forwardRef<NoteCirlceApi, NoteCircleProps>(
-  ({ note, active, onSelected }: NoteCircleProps, ref) => {
+  ({ note, active, onSelected, accentColor }: NoteCircleProps, ref) => {
+    const noteProps = getNoteProps(note);
     const groupRef = React.useRef<NoteCirlceApi>(null);
+    const circleRef = React.useRef<Konva.Circle>(null);
+    const textRef = React.useRef<Konva.Text>(null);
+
+    const setSize = React.useCallback((size: number) => {
+      if (groupRef.current) groupRef.current.radius = size;
+      if (circleRef.current) circleRef.current.radius(size);
+      if (textRef.current) textRef.current.y(-500 - size - 5);
+    }, []);
 
     React.useImperativeHandle(ref, () => {
       return groupRef.current!;
@@ -31,6 +42,7 @@ export const NoteCircle = forwardRef<NoteCirlceApi, NoteCircleProps>(
         groupRef.current.vy = Math.random() * 2 - 1;
         groupRef.current.radius = 1;
         groupRef.current.note = note;
+        groupRef.current.setCircleSize = setSize;
       }
     }, [note.id]);
 
@@ -86,14 +98,21 @@ export const NoteCircle = forwardRef<NoteCirlceApi, NoteCircleProps>(
       [note, onSelected],
     );
 
-    const radius = 25 + (isPressed ? -3 : 0);
+    const radius = noteProps.size + (isPressed ? -3 : 0);
     if (groupRef.current) groupRef.current.radius = radius;
+
+    const color = active
+      ? accentColor
+      : isHovered
+        ? "#989898"
+        : noteProps.color;
 
     return (
       <Group ref={groupRef} draggable x={0} y={0}>
         <Text
+          ref={textRef}
           x={-50}
-          y={-530}
+          y={-500 - noteProps.size - 5}
           width={100}
           height={500}
           align="center"
@@ -103,10 +122,15 @@ export const NoteCircle = forwardRef<NoteCirlceApi, NoteCircleProps>(
           hitFunc={() => false}
         />
         <Circle
+          ref={circleRef}
           x={0}
           y={0}
           radius={radius}
-          fill={active ? "#ffac59" : isHovered ? "#989898" : "#6f6f6f"}
+          fill={noteProps.circleType == "fill" ? color : undefined}
+          stroke={noteProps.circleType != "fill" ? color : undefined}
+          strokeWidth={noteProps.circleType != "fill" ? 6 : 0}
+          dashEnabled={noteProps.circleType == "dashed"}
+          dash={[10]}
           onPointerEnter={onEnter}
           onPointerLeave={onLeave}
           onPointerDown={onDown}

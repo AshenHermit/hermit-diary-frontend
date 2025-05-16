@@ -1,6 +1,7 @@
 "use client";
 
 import { NoteCirlceApi } from "@/components/visualization/notes-graph/NoteCircle";
+import { normalizeVector } from "@/lib/math-utils";
 import { DiaryNote } from "@/services/types/notes";
 import Konva from "konva";
 import React, { forwardRef } from "react";
@@ -19,7 +20,13 @@ export const NoteLinkLine = ({ from, to }: NoteLinkProps) => {
     let animatingState = { animating: true };
     const animate = () => {
       if (lineRef.current) {
-        lineRef.current.points([from.x(), from.y(), to.x(), to.y()]);
+        let dir = normalizeVector([to.x() - from.x(), to.y() - from.y()]);
+        lineRef.current.points([
+          from.x() + dir[0] * from.radius,
+          from.y() + dir[1] * from.radius,
+          to.x() - dir[0] * to.radius,
+          to.y() - dir[1] * to.radius,
+        ]);
       }
       if (animatingState.animating) requestAnimationFrame(animate);
     };

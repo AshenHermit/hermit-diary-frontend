@@ -11,12 +11,14 @@ export type NotesGraphProps = {
   notes: DiaryNote[];
   onNoteSelected: (note: DiaryNote) => void;
   activeNoteId?: number | null;
+  accentColor?: string;
 };
 
 export function NotesGraph({
   notes,
   onNoteSelected,
   activeNoteId,
+  accentColor = "#ffac59",
 }: NotesGraphProps) {
   const containerRef = React.useRef<HTMLDivElement>(null);
   const stageRef = React.useRef<Konva.Stage>(null);
@@ -144,6 +146,7 @@ export function NotesGraph({
           <NotesGraphWorld updateDeps={notes}>
             {notes.map((note) => (
               <NoteCircle
+                accentColor={accentColor}
                 key={note.id}
                 note={note}
                 active={note.id == activeNoteId}

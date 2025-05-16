@@ -4,7 +4,9 @@ import { NotesManager } from "@/app/(diary-view)/diary/[diary_code]/control-pane
 import { SelectedNotePanel } from "@/app/(diary-view)/diary/[diary_code]/control-panel/selected-note-panel";
 import { SettingsPanel } from "@/app/(diary-view)/diary/[diary_code]/control-panel/settings-panel";
 import { useDiaryStore } from "@/app/(diary-view)/diary/[diary_code]/diary-store";
+import { DiaryStylesApplier } from "@/components/controls/diary-styles-applier";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { decodeId, encodeId } from "@/lib/hash-utils";
 import { useUserStore } from "@/store/user-store";
 import classNames from "classnames";
@@ -55,6 +57,8 @@ function isTabsKey(value: string): value is TabKey {
   return tabs.some((tab) => tab.key === value);
 }
 
+export type ViewKey = "graph" | "time";
+
 export function DiaryLayout({ children }: React.PropsWithChildren) {
   const [isOpen, setIsOpen] = React.useState(true);
   const params = useParams<{ diary_code: string }>();
@@ -63,6 +67,11 @@ export function DiaryLayout({ children }: React.PropsWithChildren) {
 
   const currentTab = useDiaryStore((state) => state.currentTab);
   const setCurrentTab = useDiaryStore((state) => state.setCurrentTab);
+
+  const currentView = useDiaryStore((state) => state.currentView);
+  const setCurrentView = useDiaryStore((state) => state.setCurrentView);
+
+  const properties = useDiaryStore((state) => state.properties);
 
   let selectedTabData: TabData | null = null;
   const availableCurrentTabs = tabs.filter((tab) => tab.key == currentTab);
@@ -83,6 +92,7 @@ export function DiaryLayout({ children }: React.PropsWithChildren) {
 
   return (
     <div className="grid h-full min-h-0 grid-cols-[auto_auto_1fr] overflow-hidden">
+      <DiaryStylesApplier properties={properties} />
       <Suspense>
         <SelectedNoteLoader />
         <TabSelector />
@@ -121,13 +131,25 @@ export function DiaryLayout({ children }: React.PropsWithChildren) {
           ))}
         </div>
         <div className="relative">
-          <Button
-            variant={"ghost"}
-            className="absolute left-0 top-0 z-10 h-10 w-10 p-2"
-            onClick={() => setIsOpen(!isOpen)}
-          >
-            <PanelRightIcon />
-          </Button>
+          <div className="absolute left-0 top-0 z-10 flex gap-4">
+            <Button
+              variant={"ghost"}
+              className="h-10 w-10 p-2"
+              onClick={() => setIsOpen(!isOpen)}
+            >
+              <PanelRightIcon />
+            </Button>
+            <Tabs
+              className="select-none"
+              value={currentView}
+              onValueChange={(value) => setCurrentView(value as ViewKey)}
+            >
+              <TabsList>
+                <TabsTrigger value="graph">Graph</TabsTrigger>
+                <TabsTrigger value="time">Time</TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
         </div>
       </main>
       {children}

@@ -102,6 +102,9 @@ export function NotesGraphWorld({
         node.vy *= damping;
         // node.vx *= Math.min(0.99, damping + Math.abs(node.vx) / 1);
         // node.vy *= Math.min(0.99, damping + Math.abs(node.vy) / 1);
+        if (node.note.properties.size) {
+          node.setCircleSize(node.note.properties.size);
+        }
       }
     }
     let animatingState = { animating: true };

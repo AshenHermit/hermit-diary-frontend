@@ -7,6 +7,12 @@ import {
   ConfirmDialogApi,
 } from "@/components/controls/confirmation-dialog";
 import {
+  OptionSchema,
+  PropertiesEditor,
+  PropTypes,
+  TestOptions,
+} from "@/components/props-editor/props-editor";
+import {
   Accordion,
   AccordionContent,
   AccordionItem,
@@ -34,8 +40,12 @@ import { LoadingSpinner } from "@/components/ui/spinner";
 import { Switch } from "@/components/ui/switch";
 import { useRequestHandler } from "@/hooks/use-request-handler";
 import { useToast } from "@/hooks/use-toast";
-import { deleteDiary, updateDiary } from "@/services/methods/user/diaries";
-import { Diary } from "@/services/types/diary";
+import {
+  deleteDiary,
+  updateDiary,
+  updateDiaryProperties,
+} from "@/services/methods/user/diaries";
+import { Diary, DiaryProperties } from "@/services/types/diary";
 import { zodResolver } from "@hookform/resolvers/zod";
 import debounce from "just-debounce-it";
 import { BoltIcon, CircleDashedIcon, TriangleAlertIcon } from "lucide-react";
@@ -207,6 +217,46 @@ function DangerZoneSection() {
   );
 }
 
+const DiaryPropsOptions: Record<keyof DiaryProperties, OptionSchema<any>> = {
+  accentColor: {
+    title: "Accent Color",
+    description: "change accent color",
+    key: "accentColor",
+    type: PropTypes.color,
+  },
+};
+
 function PropertiesSection() {
-  return <div>asdad</div>;
+  const { toast } = useToast();
+  const diaryId = useDiaryStore((state) => state.id);
+  const properties = useDiaryStore((state) => state.properties);
+  const loadProperties = useDiaryStore((state) => state.loadProperties);
+
+  const { loading, error, handleRequest } = useRequestHandler();
+
+  const saveProperties = React.useCallback(
+    async (value: DiaryProperties) => {
+      handleRequest(async () => {
+        await updateDiaryProperties(diaryId, value);
+        toast({ title: "Saved!", description: "settings saved" });
+        await loadProperties();
+      });
+    },
+    [diaryId],
+  );
+
+  const handleDebounceChange = React.useMemo(
+    () => debounce(saveProperties, 500),
+    [saveProperties],
+  );
+
+  return (
+    <div>
+      <PropertiesEditor
+        onValueChange={handleDebounceChange}
+        options={DiaryPropsOptions}
+        value={properties}
+      />
+    </div>
+  );
 }

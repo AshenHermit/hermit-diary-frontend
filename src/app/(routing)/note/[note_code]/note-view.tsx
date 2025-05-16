@@ -8,7 +8,6 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { NotesGraph } from "@/components/visualization/notes-graph/notes-graph";
 import { encodeId } from "@/lib/hash-utils";
 import { strToFormattedDateTime } from "@/lib/time-utils";
 import {
@@ -77,7 +76,7 @@ export function NoteView({
           <hr />
           {note.outcomingLinks.length > 0 ? (
             <div className="flex items-center gap-2 text-base text-white">
-              <ArrowUpLeft /> Outcoming links
+              <ArrowUpLeft /> Outgoing links
             </div>
           ) : null}
           {note.outcomingLinks.map((x) => (

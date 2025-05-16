@@ -10,3 +10,7 @@ export type Diary = {
 export type DiaryProperties = {
   accentColor?: string;
 };
+
+export const defaultDiaryProperties: DiaryProperties = {
+  accentColor: "#ffac59",
+};
