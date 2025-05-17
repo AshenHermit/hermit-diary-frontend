@@ -9,6 +9,7 @@ export type StageViewProps = React.PropsWithChildren & {
   onDrag?: (x: number, y: number) => void;
   canMoveStage?: boolean;
   dragMouseButton?: number;
+  zoom?: boolean;
 };
 
 export function StageView({
@@ -16,6 +17,7 @@ export function StageView({
   onDrag,
   canMoveStage = true,
   dragMouseButton = 1,
+  zoom = true,
 }: StageViewProps) {
   const containerRef = React.useRef<HTMLDivElement>(null);
   const stageRef = React.useRef<Konva.Stage>(null);
@@ -86,6 +88,7 @@ export function StageView({
     (e: Konva.KonvaEventObject<WheelEvent>) => {
       const stage = e.target.getStage();
       if (!stage) return;
+      if (!zoom) return;
       const oldScale = stage.scaleX();
       const pointer = stage.getPointerPosition();
       const scaleBy = 1.5;

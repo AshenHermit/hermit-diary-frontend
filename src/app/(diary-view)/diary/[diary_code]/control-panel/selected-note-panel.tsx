@@ -45,6 +45,10 @@ export function SelectedNotePanel() {
   const [editMode, setEditMode] = React.useState(false);
   const { note } = useDiaryNote(selectedNote?.id, [notes]);
 
+  const forceUpdate = React.useCallback(() => {
+    forceUpdateNotes();
+  }, [forceUpdateNotes]);
+
   if (!selectedNote) {
     return (
       <DiaryTabPanel className="h-full">
@@ -127,7 +131,7 @@ export function SelectedNotePanel() {
             <AccordionContent className="flex flex-col gap-2 pt-2">
               <PropertiesSection
                 note={selectedNote}
-                forceUpdate={() => forceUpdateNotes()}
+                forceUpdate={forceUpdate}
               />
             </AccordionContent>
           </AccordionItem>

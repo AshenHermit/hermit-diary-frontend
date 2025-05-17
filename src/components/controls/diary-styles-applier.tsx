@@ -14,6 +14,7 @@ export function DiaryStylesApplier({
   properties = { ...defaultDiaryProperties, ...properties };
   const propertiesToCss: Record<keyof DiaryProperties, string> = {
     accentColor: "--accent-color",
+    backgroundImage: "--bg-image",
   };
 
   React.useEffect(() => {
@@ -22,6 +23,11 @@ export function DiaryStylesApplier({
         const value = properties[key];
         if (typeof value === "string") {
           document.body.style.setProperty(propertiesToCss[key], value);
+          if (value.indexOf(".") != -1)
+            document.body.style.setProperty(
+              propertiesToCss[key],
+              `url(${value})`,
+            );
         }
       },
     );

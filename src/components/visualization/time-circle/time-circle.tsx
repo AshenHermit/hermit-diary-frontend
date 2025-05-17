@@ -237,7 +237,12 @@ export const TimeCircle = forwardRef<TimeCircleApi, NotesCircleProps>(
     }, [activeNoteId, showNotes]);
 
     return (
-      <StageView canMoveStage={false} dragMouseButton={0} onDrag={onDrag}>
+      <StageView
+        canMoveStage={false}
+        dragMouseButton={0}
+        onDrag={onDrag}
+        zoom={false}
+      >
         <Layer>
           <MonthsArc data={state} />
           <CursorLine data={state} />

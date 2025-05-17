@@ -19,8 +19,10 @@ body {
   --color-panel: #2a2e37;
   --color-foreground: #fff;
 
+  --bg-image: url("/textures/bg.png");
+
   min-height: 100vh;
-  background-image: url("/textures/bg.png");
+  background-image: var(--bg-image);
 }
 
 /* 

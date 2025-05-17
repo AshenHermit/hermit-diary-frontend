@@ -1,5 +1,11 @@
 "use client";
 
+import {
+  FileType,
+  FileUploader,
+  UploadedFile,
+} from "@/components/controls/file-uploader";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ColorPicker } from "@/components/ui/color-picker";
 import {
@@ -29,6 +35,7 @@ import {
   ValueScroller,
   ValueScrollerProps,
 } from "@/components/ui/value-scroller";
+import { useToast } from "@/hooks/use-toast";
 import { PropertyValueType } from "@/services/types/properties";
 import {
   BinaryIcon,
@@ -149,6 +156,60 @@ export const SliderPropComponent: React.FC<
   );
 };
 
+export const ImagePropComponent: React.FC<
+  PropComponentProps<string> & ValueScrollerProps
+> = ({ type, value, onValueChange, readOnly, ...props }) => {
+  const uploadRef = React.useRef<HTMLDivElement>(null);
+  const [isLoadingImages, setIsLoadingImages] = React.useState(false);
+  const { toast } = useToast();
+
+  const onUpload = React.useCallback(
+    async (files: UploadedFile[]) => {
+      if (files.length > 0) {
+        const file = files[0];
+        onValueChange(file.url);
+        toast({
+          title: "Done!",
+          description: "image uploaded",
+          action: (
+            <>
+              <Avatar className="h-16 w-16">
+                <AvatarImage src={file.url}></AvatarImage>
+              </Avatar>
+            </>
+          ),
+        });
+      }
+    },
+    [toast],
+  );
+
+  return (
+    <div>
+      {readOnly ? (
+        <Avatar className="h-32 w-32">
+          <AvatarImage src={value}></AvatarImage>
+        </Avatar>
+      ) : (
+        <div className="flex items-center justify-center" ref={uploadRef}>
+          <FileUploader
+            types={[FileType.Image]}
+            onUpload={onUpload}
+            areaRef={uploadRef}
+            onLoadingStateChange={setIsLoadingImages}
+          >
+            <div className="flex flex-col items-center gap-2">
+              <Avatar className="h-32 w-32">
+                <AvatarImage src={value}></AvatarImage>
+              </Avatar>
+            </div>
+          </FileUploader>
+        </div>
+      )}
+    </div>
+  );
+};
+
 export type PropertyType<T> = {
   key: string;
   icon: React.ReactElement;
@@ -196,6 +257,13 @@ export const PropTypes = {
     serialize: (value) => value as number,
     component: SliderPropComponent,
   } as PropertyType<number>,
+  image: {
+    key: "image",
+    icon: <RulerDimensionLineIcon />,
+    deserialize: (value) => value as string,
+    serialize: (value) => value as string,
+    component: ImagePropComponent,
+  } as PropertyType<string>,
 };
 
 export const TestOptions = {

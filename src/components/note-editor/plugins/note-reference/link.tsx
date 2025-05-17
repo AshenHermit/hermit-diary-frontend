@@ -55,7 +55,7 @@ export function NoteReferenceElement({
   return (
     <div
       {...attributes}
-      className="yoopta-note-reference mb-[6px] w-max rounded-lg bg-muted p-4 text-sm text-muted-foreground"
+      className="yoopta-note-reference mb-[6px] w-max rounded-lg bg-muted p-1 text-sm text-muted-foreground"
       contentEditable={false}
     >
       <div className=""></div>

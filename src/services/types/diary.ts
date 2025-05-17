@@ -9,8 +9,10 @@ export type Diary = {
 
 export type DiaryProperties = {
   accentColor?: string;
+  backgroundImage?: string;
 };
 
 export const defaultDiaryProperties: DiaryProperties = {
   accentColor: "#ffac59",
+  backgroundImage: "/textures/bg.png",
 };

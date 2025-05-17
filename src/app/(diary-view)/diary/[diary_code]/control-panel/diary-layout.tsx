@@ -280,7 +280,7 @@ function SelectedNoteLoader({}) {
         }
       }
     }
-  }, [notes]);
+  }, [notes, searchParams]);
 
   React.useEffect(() => {
     if (selectedNote) {

@@ -229,6 +229,13 @@ const DiaryPropsOptions: Record<keyof DiaryProperties, OptionSchema<any>> = {
     type: PropTypes.color,
     default: defaultDiaryProperties.accentColor,
   },
+  backgroundImage: {
+    title: "Background Image",
+    description: "upload custom bg image",
+    key: "backgroundImage",
+    type: PropTypes.image,
+    default: defaultDiaryProperties.backgroundImage,
+  },
 };
 
 function PropertiesSection() {
