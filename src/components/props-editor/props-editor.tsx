@@ -163,6 +163,8 @@ export type OptionSchema<T> = {
   title: string;
   description: string;
   props?: Record<string, any>;
+  forceUpdate?: boolean;
+  default?: T | (() => T);
 };
 
 export const PropTypes = {
@@ -210,6 +212,7 @@ export type PropertiesEditorProps = {
   value: Record<string, PropertyValueType>;
   onValueChange: (value: Record<string, PropertyValueType>) => void;
   editMode?: boolean;
+  forceUpdate?: () => void;
 };
 
 export function PropertiesEditor({
@@ -217,13 +220,25 @@ export function PropertiesEditor({
   onValueChange,
   options,
   editMode,
+  forceUpdate,
 }: PropertiesEditorProps) {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState(initValue);
 
   const onOptionSelected = React.useCallback(
     (option: OptionSchema<any>) => {
-      setValue({ ...value, [option.key]: null });
+      const newVal = {
+        ...value,
+        [option.key]:
+          option.default === undefined
+            ? undefined
+            : typeof option.default === "function"
+              ? option.default()
+              : option.default,
+      };
+      setValue(newVal);
+      onValueChange(newVal);
+      if (forceUpdate) forceUpdate();
     },
     [value],
   );
@@ -233,6 +248,9 @@ export function PropertiesEditor({
       const newVal = { ...value, [key]: val };
       setValue(newVal);
       onValueChange(newVal);
+      if (options[key].forceUpdate) {
+        if (forceUpdate) forceUpdate();
+      }
     },
     [value, onValueChange],
   );
@@ -243,6 +261,7 @@ export function PropertiesEditor({
       delete newVal[key];
       setValue(newVal);
       onValueChange({ ...newVal, [key]: null });
+      if (forceUpdate) forceUpdate();
     },
     [value],
   );

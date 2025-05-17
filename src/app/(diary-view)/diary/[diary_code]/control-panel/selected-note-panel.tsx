@@ -23,13 +23,20 @@ import { LoadingSpinner } from "@/components/ui/spinner";
 import { useRequestHandler } from "@/hooks/use-request-handler";
 import { useToast } from "@/hooks/use-toast";
 import { updateDiaryNote } from "@/services/methods/user/notes";
-import { DiaryNote, NoteBase, NoteProperties } from "@/services/types/notes";
+import {
+  defaultNoteProperties,
+  DiaryNote,
+  NoteBase,
+  NoteProperties,
+} from "@/services/types/notes";
+import { useViewsStore } from "@/store/views-store";
 import debounce from "just-debounce-it";
 import { ArrowDownRight, ArrowUpLeft, BoltIcon, LinkIcon } from "lucide-react";
 import React from "react";
 
 export function SelectedNotePanel() {
   const loadNotes = useDiaryStore((state) => state.loadNotes);
+  const forceUpdateNotes = useDiaryStore((state) => state.forceUpdateNotes);
   const selectedNote = useDiaryStore((state) => state.selectedNote);
   const setSelectedNote = useDiaryStore((state) => state.setSelectedNote);
   const notes = useDiaryStore((state) => state.notes);
@@ -118,7 +125,10 @@ export function SelectedNotePanel() {
               <BoltIcon /> Properties
             </AccordionTrigger>
             <AccordionContent className="flex flex-col gap-2 pt-2">
-              <PropertiesSection note={note} onUpdate={() => loadNotes()} />
+              <PropertiesSection
+                note={selectedNote}
+                forceUpdate={() => forceUpdateNotes()}
+              />
             </AccordionContent>
           </AccordionItem>
         </Accordion>
@@ -146,42 +156,58 @@ function ReferenceLink({
   );
 }
 
-const NotePropsOptions: Record<keyof NoteProperties, OptionSchema<any>> = {
-  color: {
-    title: "Color",
-    description: "change color",
-    key: "color",
-    type: PropTypes.color,
-  },
-  circleType: {
-    title: "Circle type",
-    description: "change circle type",
-    key: "circleType",
-    type: PropTypes.circleType,
-  },
-  size: {
-    title: "Circle size",
-    description: "change circle size",
-    key: "size",
-    type: PropTypes.numberSlider,
-    props: { min: 4, max: 100, factor: 0.25 },
-  },
-  timePosition: {
-    title: "Circle time position",
-    description: "set time position",
-    key: "timePosition",
-    type: PropTypes.numberSlider,
-    props: { min: 4, max: 100, factor: 0.25, noInput: true },
-  },
-};
+function useNotePropsOptions() {
+  const timeCircleView = useViewsStore((state) => state.timeCircleView);
+  const notePropsOptionsBuilder = React.useCallback(
+    () =>
+      ({
+        color: {
+          title: "Color",
+          description: "change color",
+          key: "color",
+          type: PropTypes.color,
+          forceUpdate: true,
+          default: defaultNoteProperties.color,
+        },
+        circleType: {
+          title: "Circle type",
+          description: "change circle type",
+          key: "circleType",
+          type: PropTypes.circleType,
+          forceUpdate: true,
+          default: defaultNoteProperties.circleType,
+        },
+        size: {
+          title: "Circle size",
+          description: "change circle size",
+          key: "size",
+          type: PropTypes.numberSlider,
+          props: { min: 4, max: 100, factor: 0.25 },
+          default: defaultNoteProperties.size,
+        },
+        timePosition: {
+          title: "Circle time position",
+          description: "set time position",
+          key: "timePosition",
+          type: PropTypes.numberSlider,
+          props: { factor: 0.01, noInput: true },
+          default: () =>
+            timeCircleView ? timeCircleView.state.current.viewPosition : 0,
+        },
+      }) as Record<keyof NoteProperties, OptionSchema<any>>,
+    [],
+  );
+  return notePropsOptionsBuilder();
+}
 
 function PropertiesSection({
   note,
-  onUpdate,
+  forceUpdate,
 }: {
   note: NoteBase;
-  onUpdate?: () => void;
+  forceUpdate?: () => void;
 }) {
+  const options = useNotePropsOptions();
   const { toast } = useToast();
   const writePermission = useDiaryStore((state) => state.writePermission);
   const selectedNote = useDiaryStore((state) => state.selectedNote);
@@ -193,10 +219,10 @@ function PropertiesSection({
       handleRequest(async () => {
         await updateDiaryNote({ id: note.id, properties: value });
         toast({ title: "Saved!", description: "settings saved" });
-        if (onUpdate) onUpdate();
+        if (forceUpdate) forceUpdate();
       });
     },
-    [note, handleRequest, toast, onUpdate],
+    [note, handleRequest, toast, forceUpdate],
   );
 
   const handleDebounceChange = React.useMemo(
@@ -205,15 +231,23 @@ function PropertiesSection({
   );
 
   const onChange = (value: NoteProperties) => {
-    handleDebounceChange(value);
-    if (selectedNote) selectedNote.properties = value;
+    handleDebounceChange({ ...value });
+    if (selectedNote) {
+      for (let key of Object.keys(value) as (keyof NoteProperties)[]) {
+        if (value[key] === null) {
+          delete value[key];
+        }
+      }
+      selectedNote.properties = value;
+    }
   };
 
   return (
     <div>
       <PropertiesEditor
+        forceUpdate={forceUpdate}
         onValueChange={onChange}
-        options={NotePropsOptions}
+        options={options}
         value={note.properties}
         key={note.id}
         editMode={writePermission}

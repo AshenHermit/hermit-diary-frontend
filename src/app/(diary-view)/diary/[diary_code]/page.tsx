@@ -2,8 +2,13 @@
 
 import { useDiaryStore } from "@/app/(diary-view)/diary/[diary_code]/diary-store";
 import { NotesGraph } from "@/components/visualization/notes-graph/notes-graph";
-import { TimeCircle } from "@/components/visualization/time-circle/time-circle";
+import {
+  TimeCircle,
+  TimeCircleApi,
+  useTimeCircleState,
+} from "@/components/visualization/time-circle/time-circle";
 import { DiaryNote } from "@/services/types/notes";
+import { useViewsStore } from "@/store/views-store";
 
 export default function Page() {
   const notes = useDiaryStore((state) => state.notes);
@@ -19,6 +24,9 @@ export default function Page() {
     setCurrentTab("note");
   };
 
+  const setTimeCircleView = useViewsStore((state) => state.setTimeCircleView);
+  const timeCircleState = useTimeCircleState(notes);
+
   return (
     <div className="relative">
       {currentView == "graph" ? (
@@ -30,10 +38,14 @@ export default function Page() {
         />
       ) : (
         <TimeCircle
+          state={timeCircleState}
           accentColor={properties.accentColor}
           notes={notes}
           onNoteSelected={onSelectedNote}
           activeNoteId={activeNote?.id}
+          ref={(api: TimeCircleApi | null) => {
+            if (api) setTimeCircleView(api);
+          }}
         />
       )}
     </div>

@@ -10,17 +10,28 @@ export type NoteCircleProps = {
   active?: boolean;
   onSelected?: (note: DiaryNote) => void;
   accentColor?: string;
+  draggable?: boolean;
 };
 export type NoteCirlceApi = Konva.Group & {
   vx: number;
   vy: number;
   radius: number;
+  disabled: boolean;
   note: DiaryNote;
   setCircleSize: (size: number) => void;
 };
 
 export const NoteCircle = forwardRef<NoteCirlceApi, NoteCircleProps>(
-  ({ note, active, onSelected, accentColor }: NoteCircleProps, ref) => {
+  (
+    {
+      note,
+      active,
+      onSelected,
+      accentColor,
+      draggable = true,
+    }: NoteCircleProps,
+    ref,
+  ) => {
     const noteProps = getNoteProps(note);
     const groupRef = React.useRef<NoteCirlceApi>(null);
     const circleRef = React.useRef<Konva.Circle>(null);
@@ -42,6 +53,7 @@ export const NoteCircle = forwardRef<NoteCirlceApi, NoteCircleProps>(
         groupRef.current.vy = Math.random() * 2 - 1;
         groupRef.current.radius = 1;
         groupRef.current.note = note;
+        groupRef.current.disabled = false;
         groupRef.current.setCircleSize = setSize;
       }
     }, [note.id]);
@@ -108,7 +120,7 @@ export const NoteCircle = forwardRef<NoteCirlceApi, NoteCircleProps>(
         : noteProps.color;
 
     return (
-      <Group ref={groupRef} draggable x={0} y={0}>
+      <Group ref={groupRef} draggable={draggable} x={0} y={0}>
         <Text
           ref={textRef}
           x={-50}

@@ -289,7 +289,7 @@ function SelectedNoteLoader({}) {
       params.set(noteParamKey, encodeId("note", selectedNote.id));
       router.replace(`?${params.toString()}`);
     }
-  }, [selectedNote]);
+  }, [selectedNote, searchParams]);
 
   return null;
 }

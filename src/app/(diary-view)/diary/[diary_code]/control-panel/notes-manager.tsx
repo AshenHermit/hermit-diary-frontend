@@ -61,10 +61,10 @@ function NoteItem({ note }: { note: DiaryNote }) {
   const setSelectedNote = useDiaryStore((state) => state.setSelectedNote);
   const selectedNote = useDiaryStore((state) => state.selectedNote);
 
-  const onClick = React.useCallback(() => {
+  const onClick = () => {
     setSelectedNote(note);
     setCurrentTab("note");
-  }, [setCurrentTab]);
+  };
 
   return (
     <>

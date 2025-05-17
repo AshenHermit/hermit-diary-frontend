@@ -15,6 +15,7 @@ export type NoteLinkApi = Konva.Line & {};
 
 export const NoteLinkLine = ({ from, to }: NoteLinkProps) => {
   const lineRef = React.useRef<Konva.Line>(null);
+  const maxOpacity = 0.2;
 
   React.useEffect(() => {
     let animatingState = { animating: true };
@@ -27,6 +28,9 @@ export const NoteLinkLine = ({ from, to }: NoteLinkProps) => {
           to.x() - dir[0] * to.radius,
           to.y() - dir[1] * to.radius,
         ]);
+        let opacity = (from.opacity() + to.opacity()) / 2;
+        if (from.disabled || to.disabled) opacity = 0;
+        lineRef.current.opacity(opacity * maxOpacity);
       }
       if (animatingState.animating) requestAnimationFrame(animate);
     };
@@ -36,5 +40,7 @@ export const NoteLinkLine = ({ from, to }: NoteLinkProps) => {
     };
   }, [from, to]);
 
-  return <Line ref={lineRef} strokeWidth={3} stroke={"#fff"} opacity={0.2} />;
+  return (
+    <Line ref={lineRef} strokeWidth={3} stroke={"#fff"} opacity={maxOpacity} />
+  );
 };

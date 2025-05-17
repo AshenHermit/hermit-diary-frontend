@@ -45,7 +45,11 @@ import {
   updateDiary,
   updateDiaryProperties,
 } from "@/services/methods/user/diaries";
-import { Diary, DiaryProperties } from "@/services/types/diary";
+import {
+  defaultDiaryProperties,
+  Diary,
+  DiaryProperties,
+} from "@/services/types/diary";
 import { zodResolver } from "@hookform/resolvers/zod";
 import debounce from "just-debounce-it";
 import { BoltIcon, CircleDashedIcon, TriangleAlertIcon } from "lucide-react";
@@ -223,6 +227,7 @@ const DiaryPropsOptions: Record<keyof DiaryProperties, OptionSchema<any>> = {
     description: "change accent color",
     key: "accentColor",
     type: PropTypes.color,
+    default: defaultDiaryProperties.accentColor,
   },
 };
 
@@ -231,6 +236,7 @@ function PropertiesSection() {
   const diaryId = useDiaryStore((state) => state.id);
   const properties = useDiaryStore((state) => state.properties);
   const loadProperties = useDiaryStore((state) => state.loadProperties);
+  const writePermission = useDiaryStore((state) => state.writePermission);
 
   const { loading, error, handleRequest } = useRequestHandler();
 
@@ -256,6 +262,7 @@ function PropertiesSection() {
         onValueChange={handleDebounceChange}
         options={DiaryPropsOptions}
         value={properties}
+        editMode={writePermission}
       />
     </div>
   );
